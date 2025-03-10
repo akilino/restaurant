@@ -1,0 +1,50 @@
+# Binaries and executables
+*.exe
+*.out
+*.app
+*.o
+*.a
+*.so
+*.dll
+
+# Go build and cache files
+/bin/
+/build/
+/dist/
+*.test
+
+# Go modules and dependencies
+/vendor/
+go.sum
+go.work
+go.work.sum
+
+# Go cache and compiled files
+/tmp/
+*.log
+*.lock
+*.tmp
+*.swp
+*.swo
+.DS_Store
+
+# IDE and editor settings
+.idea/
+.vscode/
+*.iml
+
+# Go coverage reports
+*.cover
+*.cov
+coverage.out
+
+# Debugging files
+*.prof
+trace.out
+
+# Logs and temp files
+debug.log
+*.log
+
+# Docker and CI/CD files
+docker-compose.override.yml

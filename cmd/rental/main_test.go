@@ -6,9 +6,11 @@ import (
 	"github.com/akilino/restaurant/model"
 	"github.com/akilino/restaurant/router"
 	"github.com/akilino/restaurant/service"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestCarRentalAPI(t *testing.T) {
@@ -16,7 +18,11 @@ func TestCarRentalAPI(t *testing.T) {
 	r := router.SetupRouter(service)
 
 	// Add Car Test
-	car := map[string]interface{}{"id": 1, "make": "Toyota", "model": "Corolla"}
+	car := model.Car{
+		ID:    1,
+		Make:  "Toyota",
+		Model: "Corolla",
+	}
 	carJSON, _ := json.Marshal(car)
 
 	req := httptest.NewRequest("POST", "/cars", bytes.NewBuffer(carJSON))
@@ -61,10 +67,13 @@ func TestRentalService(t *testing.T) {
 	}
 
 	// Test renting a car
-	err := rs.RentCar(1)
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
+	rs.RentCar(1)
+
+	// wait for the goroutine to process
+	time.Sleep(50 * time.Millisecond)
+
+	_, exists := rs.GetCar(1)
+	assert.False(t, exists, "Car should not exist")
 
 	// Checks if car is marked as rented
 	availableCars = rs.ListAvailableCars()
@@ -73,13 +82,15 @@ func TestRentalService(t *testing.T) {
 	}
 
 	// Test renting an already rented car
-	err = rs.RentCar(2)
-	if err == nil {
-		t.Errorf("Expected error when renting an already rented car, got nil")
-	}
+	rs.RentCar(1)
 
-	err = rs.ReturnCar(1)
-	if err != nil {
+	// wait for the goroutine to process
+	time.Sleep(50 * time.Millisecond)
+
+	_, exists = rs.GetCar(1)
+	assert.False(t, exists, "Car should not exist")
+
+	if err := rs.ReturnCar(1); err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
 

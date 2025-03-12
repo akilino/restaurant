@@ -32,6 +32,10 @@ func (c *CarHandler) AddCar(w http.ResponseWriter, r *http.Request) {
 
 func (c *CarHandler) ListCars(w http.ResponseWriter, r *http.Request) {
 	availableCars := c.Service.ListAvailableCars()
+	if len(availableCars) == 0 {
+		w.Write([]byte("no cars available"))
+		return
+	}
 	json.NewEncoder(w).Encode(availableCars)
 }
 
@@ -42,9 +46,9 @@ func (c *CarHandler) RentCar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	if err = c.Service.RentCar(carID); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	err = c.Service.RentCar(carID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
